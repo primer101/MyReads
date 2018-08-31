@@ -1,7 +1,8 @@
 import React from "react";
 import * as BooksAPI from "./BooksAPI";
 import "./App.css";
-import Book from "./Book";
+// import Book from "./Book";
+import ListBooks from "./ListBooks";
 
 class BooksApp extends React.Component {
   state = {
@@ -59,13 +60,13 @@ class BooksApp extends React.Component {
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Currently Reading</h2>
                   <div className="bookshelf-books">
-                    <ol className="books-grid">
-                      {this.state.books.map(book => (
+                    <ListBooks books={this.state.books} />
+                    {/* {this.state.books.map(book => (
                         <li key={book.id}>
                           <Book book={book} />
                         </li>
-                      ))}
-                      {/* <li>
+                      ))} */}
+                    {/* <li>
                         <div className="book">
                           <div className="book-top">
                             <div
@@ -303,7 +304,6 @@ class BooksApp extends React.Component {
                           <div className="book-authors">Mark Twain</div>
                         </div>
                       </li>*/}
-                    </ol>
                   </div>
                 </div>
               </div>
