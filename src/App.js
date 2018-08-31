@@ -1,12 +1,11 @@
 import React from "react";
-import * as BooksAPI from "./BooksAPI";
+// import * as BooksAPI from "./BooksAPI";
 import "./App.css";
-// import Book from "./Book";
-import ListBooks from "./ListBooks";
+import BookShelf from "./BookShelf";
+import Search from "./Search";
 
 class BooksApp extends React.Component {
   state = {
-    books: [],
     /**
      * TODO: Instead of using this state variable to keep track of which page
      * we're on, use the URL in the browser's address bar. This will ensure that
@@ -15,12 +14,6 @@ class BooksApp extends React.Component {
      */
     showSearchPage: false
   };
-
-  componentDidMount() {
-    BooksAPI.getAll().then(books => {
-      this.setState({ books /* books: books */ });
-    });
-  }
 
   render() {
     return (
@@ -47,7 +40,7 @@ class BooksApp extends React.Component {
               </div>
             </div>
             <div className="search-books-results">
-              <ol className="books-grid" />
+              <Search />
             </div>
           </div>
         ) : (
@@ -57,16 +50,17 @@ class BooksApp extends React.Component {
             </div>
             <div className="list-books-content">
               <div>
-                <div className="bookshelf">
+                <BookShelf />
+                {/* <div className="bookshelf">
                   <h2 className="bookshelf-title">Currently Reading</h2>
                   <div className="bookshelf-books">
-                    <ListBooks books={this.state.books} />
-                    {/* {this.state.books.map(book => (
+                    <ListBooks books={this.state.books} /> */}
+                {/* {this.state.books.map(book => (
                         <li key={book.id}>
                           <Book book={book} />
                         </li>
                       ))} */}
-                    {/* <li>
+                {/* <li>
                         <div className="book">
                           <div className="book-top">
                             <div
@@ -304,8 +298,8 @@ class BooksApp extends React.Component {
                           <div className="book-authors">Mark Twain</div>
                         </div>
                       </li>*/}
-                  </div>
-                </div>
+                {/* </div>
+                </div> */}
               </div>
             </div>
             <div className="open-search">

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 // import PropTypes from "prop-types";
 import sortBy from "sort-by";
 import Book from "./Book";

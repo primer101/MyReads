@@ -6,13 +6,28 @@ class Book extends Component {
     book: PropTypes.object.isRequired
   };
 
-  state = {
-    status: "" // 'currentlyReading' || 'wantToRead' || 'read' || none
-  };
+  options = [
+    {
+      value: "currentlyReading",
+      text: "Currently Reading"
+    },
+    {
+      value: "wantToRead",
+      text: "Want To Read"
+    },
+    {
+      value: "read",
+      text: "Read"
+    },
+    {
+      value: "none",
+      text: "None"
+    }
+  ];
 
-  componentDidMount() {
-    this.setState({ status: this.props.book.shelf });
-  }
+  state = {
+    status: this.props.book.shelf || "none" // 'currentlyReading' || 'wantToRead' || 'read' || none */
+  };
 
   render() {
     const { book } = this.props;
@@ -36,19 +51,30 @@ class Book extends Component {
               <option value="move" disabled>
                 Move to...
               </option>
-              <option value="currentlyReading">Currently Reading</option>
-              <option value="wantToRead">Want to Read</option>
-              <option value="read">Read</option>
-              <option value="none">None</option>
+              {this.options.map((option, index) => (
+                <option
+                  key={index}
+                  value={option.value}
+                  selected={
+                    option.value === this.state.status ? "selected" : ""
+                  }
+                >
+                  {option.text}
+                </option>
+              ))}
             </select>
           </div>
         </div>
         <div className="book-title">{book.title}</div>
-        {book.authors.map((author, index) => (
-          <div className="book-authors" key={index}>
-            {author}
-          </div>
-        ))}
+        {book.authors ? (
+          book.authors.map((author, index) => (
+            <div className="book-authors" key={index}>
+              {author}
+            </div>
+          ))
+        ) : (
+          <div className="book-authors">Authors Unknown</div>
+        )}
       </div>
     );
   }
