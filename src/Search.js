@@ -4,21 +4,64 @@ import ListBooks from "./ListBooks";
 import { Link } from "react-router-dom";
 
 class Search extends Component {
-  state = {
-    books: [],
-    query: ""
-    // query: "biography"
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      books: [],
+      query: ""
+      // query: "biography"
+    };
+  }
 
-  // componentDidMount() {
-  //   BooksAPI.search(this.state.query).then(books => {
-  //     this.setState({ books });
-  //   });
-  // }
+  booksSelected = [];
+
+  componentDidMount() {
+    BooksAPI.getAll()
+      .then(books => (this.booksSelected = books))
+      .catch(error => console.log("All" + error));
+    BooksAPI.search(this.state.query)
+      .then(
+        books =>
+          books && books instanceof Array
+            ? this.setState({ books })
+            : this.setState({ books: [] }),
+        console.log("State updated", this.state)
+      )
+      .catch(error => console.log("Search" + error));
+  }
 
   onChangeSearch = search => {
-    this.setState({ query: search.trim() });
-    BooksAPI.search(this.state.query).then(books => this.setState({ books }));
+    this.setState(
+      {
+        query: search.trim()
+      } /* , () =>
+      console.log("State updated", this.state) */
+    );
+
+    BooksAPI.search(this.state.query)
+      .then(
+        books =>
+          books && books instanceof Array
+            ? this.setState({ books }, () => {
+                console.log("State updated", this.state);
+                this.booksSelected.forEach(book => {
+                  this.onChangeBook(book, book.shelf);
+                });
+              })
+            : this.setState({ books: [] })
+      )
+      .catch(error => console.log("Search" + error));
+  };
+
+  onChangeBook = (book, shelf) => {
+    this.setState(prevState => ({
+      books: prevState.books.map(item => {
+        if (item.id === book.id) {
+          item.shelf = shelf;
+        }
+        return item;
+      })
+    }));
   };
 
   render() {
@@ -40,10 +83,15 @@ class Search extends Component {
         <div className="search-books-results">
           <div className="bookshelf">
             <div className="bookshelf-books">
-              {this.state.books && this.state.books.length > 0 ? (
-                <ListBooks books={this.state.books} />
+              {this.state.books.length > 0 ? (
+                <ListBooks
+                  books={this.state.books}
+                  onChangeBook={(book, shelf) => {
+                    this.onChangeBook(book, shelf);
+                  }}
+                />
               ) : (
-                "No books found"
+                "No books found, try another search"
               )}
             </div>
           </div>

@@ -5,30 +5,27 @@ import { Link } from "react-router-dom";
 
 class BookShelf extends Component {
   state = {
-    books: []
+    currentReading: [],
+    wantToRead: [],
+    read: []
   };
 
   componentDidMount() {
-    BooksAPI.getAll().then(books => this.setState({ books }));
+    this.onChangeBook();
   }
 
   onChangeBook = (book, shelf) => {
-    this.setState((prevState, props) => ({
-      books: prevState.books.map(item => {
-        if (item.id === book.id) {
-          item.shelf = shelf;
-        }
-        return item;
+    BooksAPI.getAll().then(books =>
+      this.setState({
+        currentReading: books.filter(book => book.shelf === "currentlyReading"),
+        wantToRead: books.filter(book => book.shelf === "wantToRead"),
+        read: books.filter(book => book.shelf === "read")
       })
-    }));
+    );
   };
 
   render() {
-    let currentReading = this.state.books.filter(
-      book => book.shelf === "currentlyReading"
-    );
-    let wantRead = this.state.books.filter(book => book.shelf === "wantToRead");
-    let read = this.state.books.filter(book => book.shelf === "read");
+    const { currentReading, wantToRead, read } = this.state;
     return (
       <div className="list-books">
         <div className="list-books-title">
@@ -45,7 +42,7 @@ class BookShelf extends Component {
             </div>
             <h2 className="bookshelf-title">Want to Read</h2>
             <div className="bookshelf-books">
-              <ListBooks books={wantRead} onChangeBook={this.onChangeBook} />
+              <ListBooks books={wantToRead} onChangeBook={this.onChangeBook} />
             </div>
             <h2 className="bookshelf-title">Read</h2>
             <div className="bookshelf-books">

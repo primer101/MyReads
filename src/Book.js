@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { update } from "./BooksAPI";
 
 class Book extends Component {
   static propTypes = {
@@ -8,6 +9,7 @@ class Book extends Component {
   };
 
   updateBook = shelf => {
+    update(this.props.book, shelf).then(res => console.log(res));
     this.props.onChangeBook(this.props.book, shelf);
   };
 
@@ -30,7 +32,7 @@ class Book extends Component {
           />
           <div className="book-shelf-changer">
             <select
-              value={book.shelf}
+              value={book.shelf || "none"}
               onChange={event => this.updateBook(event.target.value)}
             >
               <option value="move" disabled>
