@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import * as BooksAPI from "./BooksAPI";
 import ListBooks from "./ListBooks";
 import { Link } from "react-router-dom";
+import { ToastContainer, ToastStore } from "react-toasts";
 
 class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
       books: [],
-      query: ""
+      query: " "
       // query: "biography"
     };
   }
@@ -22,7 +23,7 @@ class Search extends Component {
     BooksAPI.search(this.state.query)
       .then(
         books =>
-          books && books instanceof Array
+          books instanceof Array
             ? this.setState({ books })
             : this.setState({ books: [] }),
         console.log("State updated", this.state)
@@ -31,21 +32,18 @@ class Search extends Component {
   }
 
   onChangeSearch = search => {
-    this.setState(
-      {
-        query: search.trim()
-      } /* , () =>
-      console.log("State updated", this.state) */
-    );
+    this.setState({
+      query: search.trim()
+    });
 
     BooksAPI.search(this.state.query)
       .then(
         books =>
-          books && books instanceof Array
+          books instanceof Array
             ? this.setState({ books }, () => {
                 console.log("State updated", this.state);
                 this.booksSelected.forEach(book => {
-                  this.onChangeBook(book, book.shelf);
+                  this.onChangeBook(book, book.shelf, "success", false);
                 });
               })
             : this.setState({ books: [] })
@@ -53,15 +51,21 @@ class Search extends Component {
       .catch(error => console.log("Search" + error));
   };
 
-  onChangeBook = (book, shelf) => {
-    this.setState(prevState => ({
-      books: prevState.books.map(item => {
-        if (item.id === book.id) {
-          item.shelf = shelf;
-        }
-        return item;
-      })
-    }));
+  onChangeBook = (book, shelf, result, showToast) => {
+    if (result === "success") {
+      this.setState(prevState => ({
+        books: prevState.books.map(item => {
+          if (item.id === book.id) {
+            item.shelf = shelf;
+          }
+          return item;
+        })
+      }));
+      showToast &&
+        ToastStore.success("The book was updated in your bookshelf. 👍");
+    } else {
+      showToast && ToastStore.error("There was an error updating the book. 😒");
+    }
   };
 
   render() {
@@ -86,9 +90,7 @@ class Search extends Component {
               {this.state.books.length > 0 ? (
                 <ListBooks
                   books={this.state.books}
-                  onChangeBook={(book, shelf) => {
-                    this.onChangeBook(book, shelf);
-                  }}
+                  onChangeBook={this.onChangeBook}
                 />
               ) : (
                 "No books found, try another search"
@@ -96,6 +98,11 @@ class Search extends Component {
             </div>
           </div>
         </div>
+        <ToastContainer
+          store={ToastStore}
+          position={ToastContainer.POSITION.TOP_RIGHT}
+        />
+        ;
       </div>
     );
   }

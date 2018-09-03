@@ -14,7 +14,7 @@ class BookShelf extends Component {
     this.onChangeBook();
   }
 
-  onChangeBook = (book, shelf) => {
+  onChangeBook = () => {
     BooksAPI.getAll().then(books =>
       this.setState({
         currentReading: books.filter(book => book.shelf === "currentlyReading"),

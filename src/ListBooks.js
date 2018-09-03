@@ -9,8 +9,8 @@ class ListBooks extends Component {
     onChangeBook: PropTypes.func.isRequired
   };
 
-  onChangeBook = (book, shelf) => {
-    this.props.onChangeBook(book, shelf);
+  onChangeBook = (book, shelf, result, showToast) => {
+    this.props.onChangeBook(book, shelf, result, showToast);
   };
 
   render() {
@@ -19,12 +19,7 @@ class ListBooks extends Component {
         {this.props.books &&
           this.props.books.sort(sortBy("title")).map(book => (
             <li key={book.id}>
-              <Book
-                book={book}
-                onChangeBook={(bookChanged, shelf) =>
-                  this.onChangeBook(bookChanged, shelf)
-                }
-              />
+              <Book book={book} onChangeBook={this.onChangeBook} />
             </li>
           ))}
       </ol>

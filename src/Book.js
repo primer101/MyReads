@@ -9,8 +9,15 @@ class Book extends Component {
   };
 
   updateBook = shelf => {
-    update(this.props.book, shelf).then(res => console.log(res));
-    this.props.onChangeBook(this.props.book, shelf);
+    update(this.props.book, shelf)
+      .then(res => {
+        console.log(res);
+        this.props.onChangeBook(this.props.book, shelf, "success", true);
+      })
+      .catch(error => {
+        console.log("Error in Update", error);
+        this.props.onChangeBook(this.props.book, shelf, "error", true);
+      });
   };
 
   render() {
@@ -27,7 +34,7 @@ class Book extends Component {
               backgroundImage:
                 book.imageLinks && book.imageLinks.thumbnail
                   ? `url(${book.imageLinks.thumbnail})`
-                  : 'url("./img/Image-Not-Available.png")'
+                  : "url('./img/Image-Not-Available.png')"
             }}
           />
           <div className="book-shelf-changer">
