@@ -9,54 +9,58 @@ class Search extends Component {
     super(props);
     this.state = {
       books: [],
-      query: " "
-      // query: "biography"
+      query: ""
+      // query: "biography",
     };
+    this.booksSelected = [];
+    this.booksOwned = [];
   }
-
-  booksSelected = [];
 
   componentDidMount() {
     BooksAPI.getAll()
-      .then(books => (this.booksSelected = books))
-      .catch(error => console.log("All" + error));
-    BooksAPI.search(this.state.query)
-      .then(
-        books =>
-          books instanceof Array
-            ? this.setState({ books })
-            : this.setState({ books: [] }),
-        console.log("State updated", this.state)
-      )
-      .catch(error => console.log("Search" + error));
+      .then(books => {
+        this.booksSelected = books;
+        this.booksOwned.length = this.booksSelected.length;
+        this.booksOwned.fill(false);
+      })
+      .catch(error => console.log("All error: " + error));
   }
 
   onChangeSearch = search => {
     this.setState({
-      query: search.trim()
+      query: search.trimStart()
     });
 
-    BooksAPI.search(this.state.query)
-      .then(
-        books =>
-          books instanceof Array
-            ? this.setState({ books }, () => {
-                console.log("State updated", this.state);
-                this.booksSelected.forEach(book => {
-                  this.onChangeBook(book, book.shelf, "success", false);
-                });
-              })
-            : this.setState({ books: [] })
-      )
-      .catch(error => console.log("Search" + error));
+    if (search === "") {
+      this.setState({ books: [] }, () =>
+        console.log("State updated: ", this.state)
+      );
+    } else {
+      BooksAPI.search(this.state.query)
+        .then(
+          books =>
+            books instanceof Array
+              ? this.setState({ books }, () => {
+                  console.log("State updated", this.state);
+                  this.booksSelected.forEach(book => {
+                    this.onChangeBook(book, book.shelf, "success", false);
+                  });
+                })
+              : this.setState({ books: [] })
+        )
+        .catch(error => console.log("Search error: " + error));
+    }
   };
 
   onChangeBook = (book, shelf, result, showToast) => {
     if (result === "success") {
       this.setState(prevState => ({
-        books: prevState.books.map(item => {
+        books: prevState.books.map((item, index) => {
           if (item.id === book.id) {
             item.shelf = shelf;
+            shelf && shelf !== "none"
+              ? (this.booksOwned[index] = true)
+              : (this.booksOwned[index] = false);
           }
           return item;
         })
@@ -90,6 +94,7 @@ class Search extends Component {
               {this.state.books.length > 0 ? (
                 <ListBooks
                   books={this.state.books}
+                  booksOwned={this.booksOwned}
                   onChangeBook={this.onChangeBook}
                 />
               ) : (
@@ -102,7 +107,6 @@ class Search extends Component {
           store={ToastStore}
           position={ToastContainer.POSITION.TOP_RIGHT}
         />
-        ;
       </div>
     );
   }
